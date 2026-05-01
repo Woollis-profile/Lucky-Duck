@@ -921,9 +921,8 @@ function celebrate(){
 //  7. Embedded iframes (e.g. Notion) block mic — guide user to open directly
 // ═══════════════════════════════════════════
 let _micActive = false;
-let _micCtx = null;
+let _micCtx    = null;
 
-/* ─── Open the mic overlay ─── */
 function toggleMic(ctx) {
   _micCtx = ctx;
   var overlay = document.getElementById("mic-overlay");
@@ -933,187 +932,189 @@ function toggleMic(ctx) {
   var wave    = document.getElementById("mic-waveform");
   var tbox    = document.getElementById("mic-transcript-box");
   var sendBtn = document.getElementById("mic-send-btn");
-
-  // Reset overlay state
-  icon.textContent   = "🎙️";
-  title.textContent  = "Tap the mic to start";
-  status.textContent = "Lucky Duck is ready to listen";
-  tbox.textContent   = "Your words will appear here as you speak...";
+  icon.textContent    = "🎙️";
+  title.textContent   = "Getting ready...";
+  status.textContent  = "Just a moment";
+  tbox.textContent    = "Your words will appear here as you speak...";
   tbox.classList.remove("has-text");
   wave.classList.add("idle");
   sendBtn.classList.remove("show");
-
+  sendBtn.textContent = "Send to Lucky Duck ➤";
+  sendBtn.onclick     = micSendTranscript;
   overlay.classList.add("show");
-
-  // Check browser support
   var SRClass = window.webkitSpeechRecognition || window.SpeechRecognition;
   if (!SRClass) {
     icon.textContent   = "😕";
     title.textContent  = "Browser not supported";
-    status.textContent = "Please open Lucky Duck in Safari (iPhone/iPad) or Chrome (Android)";
+    status.textContent = "Open Lucky Duck in Safari on your iPad";
     return;
   }
-
-  // Auto-start listening after a short delay so the overlay renders first
-  setTimeout(function() { _startListening(ctx, SRClass); }, 350);
+  try { window.speechSynthesis.cancel(); } catch(e) {}
+  setTimeout(function() { _startListening(SRClass); }, 600);
 }
 
-/* ─── Start the speech recogniser ─── */
-function _startListening(ctx, SRClass) {
+function _startListening(SRClass) {
   if (_micActive) return;
-
   var icon    = document.getElementById("mic-modal-icon");
   var title   = document.getElementById("mic-modal-title");
   var status  = document.getElementById("mic-modal-status");
   var wave    = document.getElementById("mic-waveform");
   var tbox    = document.getElementById("mic-transcript-box");
   var sendBtn = document.getElementById("mic-send-btn");
-
-  // Stop any TTS — iOS blocks mic while audio is playing
-  try { window.speechSynthesis.cancel(); } catch(e) {}
-
+  var btn     = document.getElementById((_micCtx || "home") + "-mic");
+  var lbl     = document.getElementById((_micCtx || "home") + "-mic-lbl");
   if (window._sr) { try { window._sr.abort(); } catch(e) {} window._sr = null; }
-
   var sr = new SRClass();
   window._sr = sr;
   sr.lang            = "en-AU";
   sr.continuous      = false;
   sr.interimResults  = true;
   sr.maxAlternatives = 1;
-
-  var finalText = "";
-
+  var collectedText = "";
+  var silenceTimer  = null;
+  function clearSilenceTimer() {
+    if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
+  }
+  function armSilenceTimer() {
+    clearSilenceTimer();
+    silenceTimer = setTimeout(function() {
+      try { sr.stop(); } catch(e) {}
+    }, 2500);
+  }
   sr.onstart = function() {
     _micActive = true;
     listening  = true;
-    finalText  = "";
-    // Update overlay to LISTENING state
+    collectedText = "";
     icon.textContent    = "🔴";
     title.textContent   = "Listening...";
     status.textContent  = "Speak now — tap Stop when done";
-    wave.classList.remove("idle");
     tbox.textContent    = "";
     tbox.classList.remove("has-text");
+    wave.classList.remove("idle");
     sendBtn.classList.remove("show");
-    // Update mic button
-    var btn = document.getElementById(ctx + "-mic");
-    var lbl = document.getElementById(ctx + "-mic-lbl");
     if (btn) btn.classList.add("listening");
     if (lbl) lbl.textContent = "Listening...";
+    armSilenceTimer();
   };
-
+  sr.onaudiostart = function() { armSilenceTimer(); };
   sr.onresult = function(e) {
+    armSilenceTimer();
     var interim = "";
     for (var i = e.resultIndex; i < e.results.length; i++) {
       if (e.results[i].isFinal) {
-        finalText += e.results[i][0].transcript + " ";
+        collectedText += e.results[i][0].transcript + " ";
       } else {
         interim += e.results[i][0].transcript;
       }
     }
-    var display = (finalText + interim).trim();
+    var display = (collectedText + interim).trim();
     if (display) {
       tbox.textContent = display;
       tbox.classList.add("has-text");
     }
+    if (e.results[e.results.length - 1] && e.results[e.results.length - 1].isFinal) {
+      clearSilenceTimer();
+      try { sr.stop(); } catch(ex) {}
+    }
   };
-
   sr.onspeechend = function() {
+    clearSilenceTimer();
     try { sr.stop(); } catch(e) {}
   };
-
+  sr.onnomatch = function() { clearSilenceTimer(); };
   sr.onend = function() {
+    clearSilenceTimer();
     _micActive = false;
     listening  = false;
-    var btn = document.getElementById(_micCtx + "-mic");
-    var lbl = document.getElementById(_micCtx + "-mic-lbl");
     if (btn) btn.classList.remove("listening");
     if (lbl) lbl.textContent = "Tap to talk";
-
-    var transcript = finalText.trim() || tbox.textContent.trim();
     wave.classList.add("idle");
-
-    if (transcript && transcript !== "Your words will appear here as you speak...") {
-      // Show transcript + send button
+    var transcript = collectedText.trim() || tbox.textContent.trim();
+    var isPlaceholder = (transcript === "Your words will appear here as you speak...");
+    if (transcript && !isPlaceholder) {
       icon.textContent    = "✅";
       title.textContent   = "Got it!";
-      status.textContent  = "Review below, then send";
+      status.textContent  = "Check your words below, then send";
       tbox.textContent    = transcript;
       tbox.classList.add("has-text");
       sendBtn.classList.add("show");
     } else {
-      // Nothing heard — offer to try again
-      icon.textContent    = "🤔";
-      title.textContent   = "Nothing heard";
-      status.textContent  = "Tap the mic button below to try again";
-      // Show a re-try button in place of send
-      sendBtn.textContent = "Try again 🎙️";
-      sendBtn.classList.add("show");
-      sendBtn.onclick = function() {
-        sendBtn.textContent = "Send to Lucky Duck ➤";
-        sendBtn.onclick = micSendTranscript;
-        _startListening(_micCtx, SRClass);
-      };
+      _showRetry("Nothing heard — make sure your mic is on and try again");
     }
   };
-
   sr.onerror = function(e) {
+    clearSilenceTimer();
     _micActive = false;
     listening  = false;
     wave.classList.add("idle");
-    var btn = document.getElementById(_micCtx + "-mic");
-    var lbl = document.getElementById(_micCtx + "-mic-lbl");
     if (btn) btn.classList.remove("listening");
     if (lbl) lbl.textContent = "Tap to talk";
-
-    if (e.error === "not-allowed" || e.error === "permission-denied") {
+    var err = e.error || "";
+    if (err === "not-allowed" || err === "permission-denied") {
       icon.textContent    = "🔒";
-      title.textContent   = "Mic access blocked";
-      status.textContent  = "On iPhone: Settings > Safari > Microphone > Allow";
-      tbox.textContent    = "Once you allow microphone access, tap Cancel and try again.";
+      title.textContent   = "Mic blocked";
+      status.textContent  = "Settings > Safari > Microphone > Allow";
+      tbox.textContent    = "After changing the setting, tap Cancel and try again.";
       tbox.classList.add("has-text");
-    } else if (e.error === "no-speech") {
-      icon.textContent    = "🤔";
-      title.textContent   = "Nothing heard";
-      status.textContent  = "Tap Try Again below to have another go";
-      sendBtn.textContent = "Try again 🎙️";
-      sendBtn.classList.add("show");
-      sendBtn.onclick = function() {
-        sendBtn.textContent = "Send to Lucky Duck ➤";
-        sendBtn.onclick = micSendTranscript;
-        _startListening(_micCtx, SRClass);
-      };
+    } else if (err === "no-speech") {
+      _showRetry("No speech detected — try speaking a bit louder");
+    } else if (err === "audio-capture") {
+      _showRetry("Mic not found — check your iPad microphone");
+    } else if (err === "network") {
+      _showRetry("Network error — speech recognition needs internet");
+    } else if (err === "aborted") {
+      icon.textContent   = "🎙️";
+      title.textContent  = "Cancelled";
+      status.textContent = "Tap the mic button to try again";
     } else {
-      icon.textContent    = "😕";
-      title.textContent   = "Something went wrong";
-      status.textContent  = "Error: " + (e.error || "unknown") + ". Try again.";
+      _showRetry("Something went wrong — tap to try again");
     }
   };
-
   try {
     sr.start();
   } catch(e) {
     _micActive = false;
     icon.textContent    = "😕";
     title.textContent   = "Could not start mic";
-    status.textContent  = "Please use Safari on iPhone/iPad or Chrome on Android";
+    status.textContent  = "Please close this and try again in Safari";
   }
 }
 
-/* ─── Send transcript from overlay ─── */
+function _showRetry(msg) {
+  var icon    = document.getElementById("mic-modal-icon");
+  var title   = document.getElementById("mic-modal-title");
+  var status  = document.getElementById("mic-modal-status");
+  var sendBtn = document.getElementById("mic-send-btn");
+  icon.textContent    = "🤔";
+  title.textContent   = "Hmm...";
+  status.textContent  = msg;
+  sendBtn.textContent = "Try again 🎙️";
+  sendBtn.classList.add("show");
+  sendBtn.onclick = function() {
+    sendBtn.textContent = "Send to Lucky Duck ➤";
+    sendBtn.onclick     = micSendTranscript;
+    sendBtn.classList.remove("show");
+    var SRClass = window.webkitSpeechRecognition || window.SpeechRecognition;
+    if (SRClass) {
+      var i2 = document.getElementById("mic-modal-icon");
+      var t2 = document.getElementById("mic-modal-title");
+      var s2 = document.getElementById("mic-modal-status");
+      i2.textContent = "🎙️";
+      t2.textContent = "Getting ready...";
+      s2.textContent = "Just a moment";
+      setTimeout(function() { _startListening(SRClass); }, 400);
+    }
+  };
+}
+
 function micSendTranscript() {
   var tbox = document.getElementById("mic-transcript-box");
   var transcript = tbox ? tbox.textContent.trim() : "";
   if (!transcript || transcript === "Your words will appear here as you speak...") return;
-
-  // Put text into the correct input field and close overlay
   var ctx = _micCtx || "home";
   var inp = document.getElementById(ctx === "home" ? "home-in" : "coach-in");
   if (inp) inp.value = transcript;
-
-  micCancel(); // close overlay
-
-  // Feed into Lucky Duck
+  micCancel();
   if (ctx === "home") {
     processHomeInput(transcript);
   } else {
@@ -1121,20 +1122,18 @@ function micSendTranscript() {
   }
 }
 
-/* ─── Close the overlay ─── */
 function micCancel() {
-  var overlay = document.getElementById("mic-overlay");
-  if (overlay) overlay.classList.remove("show");
   if (window._sr) { try { window._sr.abort(); } catch(e) {} window._sr = null; }
   _micActive = false;
   listening  = false;
+  var overlay = document.getElementById("mic-overlay");
+  if (overlay) overlay.classList.remove("show");
   if (_micCtx) {
     var btn = document.getElementById(_micCtx + "-mic");
     var lbl = document.getElementById(_micCtx + "-mic-lbl");
     if (btn) btn.classList.remove("listening");
     if (lbl) lbl.textContent = "Tap to talk";
   }
-  // Reset send button
   var sendBtn = document.getElementById("mic-send-btn");
   if (sendBtn) {
     sendBtn.textContent = "Send to Lucky Duck ➤";
