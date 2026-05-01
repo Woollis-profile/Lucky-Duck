@@ -233,7 +233,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
       </div>
       <div class="bubble" id="home-bubble">
         <div class="typing" id="home-typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
-        <div class="duck-txt" id="home-txt">Hey! I'm Lucky Duck — your problem-solving pal. No cap, I'm totally here for you. How are you feeling today? Pick a feeling above, or type what's going on!</div>
+        <div class="duck-txt" id="home-txt">Hey, I'm Lucky Duck! Whatever's going on today, we'll sort it out together. How are you feeling right now?</div>
       </div>
     </div>
 
@@ -246,7 +246,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
       <div class="streak-e">🔥</div>
       <div>
         <div class="streak-t" id="streak-txt">3 day streak!</div>
-        <div class="streak-s">Keep going — you're doing great!</div>
+        <div class="streak-s">Keep showing up — that's what counts.</div>
       </div>
     </div>
 
@@ -262,7 +262,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 
     <div class="safe-banner">
       <div class="safe-icon">🛡️</div>
-      <div class="safe-txt">This is a safe, kind space just for you. Everything here is private. If you ever feel really unsafe, please talk to a trusted adult or call a helpline.</div>
+      <div class="safe-txt">This is your space — totally private. If things ever feel really heavy, please reach out to someone you trust or call a helpline.</div>
     </div>
 
     <div style="height:10px"></div>
@@ -314,7 +314,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
       </div>
       <div class="bubble">
         <div class="typing" id="coach-typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
-        <div class="duck-txt" id="coach-txt">You've got this — let's work through this together, one step at a time! 🌟</div>
+        <div class="duck-txt" id="coach-txt">Let's take this one step at a time — you've totally got this.</div>
       </div>
     </div>
     <div id="coach-content"></div>
@@ -409,127 +409,127 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 // DATA — WISDOM & COACHING CONTENT
 // ═══════════════════════════════════════════
 const WISDOM = {
-  default:"Every seed planted with patience grows into something wonderful. Today is a great day to be brave and kind.",
-  Happy:"A joyful heart is a beautiful gift — and the best thing you can do is share it! Your happiness lights up the room.",
-  Frustrated:"Even the mightiest rivers have to find their way around rocks. Your patience is growing stronger every single moment.",
-  Worried:"You only need enough strength for today — not for tomorrow, not for next week. Just this one moment. You can do this.",
-  Angry:"Being slow to anger is one of the greatest strengths a person can have. That calm you find right now? That is real power.",
-  Meh:"Sometimes rest is exactly what we need. Being kind and gentle with yourself today is not giving up — it is wisdom.",
-  Tired:"Even the bravest heroes need to rest. Taking care of yourself is never a waste of time — it makes you stronger for tomorrow.",
-  Overwhelmed:"When everything feels like too much, you only need to take the very next tiny step. Just one. I am right here with you.",
-  problem:"Two are better than one — and you've got Lucky Duck right beside you! We'll think this through together.",
-  calm:"A still, quiet heart can hear things a noisy one cannot. Let's find your peaceful place together.",
-  feelings:"Understanding your own heart is one of the greatest forms of wisdom. The brave person looks honestly at what they feel.",
-  social:"Treat others the way you want to be treated — and remember, every person is carrying something you cannot see.",
-  reframe:"The way you think in your heart shapes your whole life. Let's choose thoughts that are true and kind — starting now.",
-  sensory:"Your body is wonderfully made and worth listening to. Let's pause and pay attention to what it's telling us."
+  default:"Good things take time — and you're already putting in the work just by being here.",
+  Happy:"Good days are worth noticing. Enjoy it and maybe share some of that good energy with someone around you.",
+  Frustrated:"Getting frustrated just means you actually care. The trick is finding a way through, not around it.",
+  Worried:"You don't have to have tomorrow figured out. Just today. Just this moment. That's enough.",
+  Angry:"The calmest person in the room usually has the most power. Taking a breath isn't backing down — it's a smart move.",
+  Meh:"Rest isn't the same as giving up. Sometimes your brain just needs a quiet day — and that's completely fine.",
+  Tired:"You can't pour from an empty cup. Taking care of yourself today means you'll have more to give tomorrow.",
+  Overwhelmed:"When things feel like too much, just find the one next small thing you can do. That's it. One thing.",
+  problem:"Two heads are better than one. You've got me, and together we'll figure this out.",
+  calm:"When everything quiets down, you can actually hear what you need. Let's find that quiet space.",
+  feelings:"Knowing what you're actually feeling — and being honest about it — takes more guts than most people think.",
+  social:"Everyone's dealing with something you can't see. A bit of kindness goes a long way, even when it's hard.",
+  reframe:"The story you tell yourself about yourself really matters. Let's make sure it's actually true and fair.",
+  sensory:"Your body's pretty smart — it's always trying to tell you something. Let's actually listen to it."
 };
 
 const COACHES = {
   problem:{
     icon:"🧩", title:"Let's Solve It!", sub:"Step-by-step problem solving",
     steps:[
-      {q:"What is the problem? Describe it in your own words — even if it feels messy!",
+      {q:"What's going on? Just say it in your own words — messy is fine.",
        opts:[{e:"😡",t:"Someone was unkind to me"},{e:"📚",t:"Something at school is hard"},{e:"🏠",t:"Something happening at home"},{e:"🤷",t:"I'm not quite sure yet"}]},
-      {q:"How does this problem make your body feel right now?",
+      {q:"How does it feel in your body right now?",
        opts:[{e:"💓",t:"My heart is beating fast"},{e:"😤",t:"I feel hot and tense"},{e:"😶",t:"I feel frozen or numb"},{e:"😰",t:"My tummy feels funny"}]},
-      {q:"What is ONE small thing you could try to help with this problem?",
+      {q:"What's one small thing you could actually try?",
        opts:[{e:"🗣️",t:"Talk to someone I trust"},{e:"⏸️",t:"Take a break and breathe first"},{e:"✏️",t:"Write or draw it out"},{e:"🤝",t:"Ask for help from an adult"}]},
-      {q:"Who is a safe, trusted person you could talk to about this?",
+      {q:"Is there someone you trust you could talk to about this?",
        opts:[{e:"👨‍👩‍👧",t:"A parent or family member"},{e:"👩‍🏫",t:"A teacher or school helper"},{e:"👫",t:"A trusted friend"},{e:"🦆",t:"Just Lucky Duck for now"}]}
     ],
     wisdom:[
-      "Asking for help is one of the bravest things a person can do. The wise always seek guidance from those they trust.",
-      "Thinking carefully before you act is a sign of great wisdom. Breathe first — then decide.",
-      "Being gentle with yourself while solving a problem makes everything easier. You deserve that kindness.",
-      "Every person who ever solved a hard problem started by just taking the very first small step. That step is enough."
+      "Asking for help isn't weak — it's honestly one of the smartest things you can do.",
+      "Taking a breath before you react isn't weakness, it's actually a superpower.",
+      "Be easy on yourself while you're figuring this out. You're doing better than you think.",
+      "Nobody solves big problems all at once. You just need the first small step — that's it."
     ],
-    celebrate:{title:"Amazing problem-solving! 🌟",msg:"You thought that through so carefully! Remember: the wise person who seeks help and takes one step at a time can move any mountain.",wisdom:"Wisdom comes to those who are brave enough to ask questions and keep going even when things are difficult. That is exactly who you are."}
+    celebrate:{title:"You sorted it! 🌟",msg:"You actually worked through that whole thing. Asking for help and taking it step by step is genuinely the smartest way to tackle anything.",wisdom:"The people who figure things out aren't the ones with all the answers — they're the ones who keep going and ask good questions. That's you."}
   },
   calm:{
     icon:"🌊", title:"Let's Find Calm", sub:"Breathing and grounding tools",
     steps:[
-      {q:"Where in your body do you feel the big feelings right now?",
+      {q:"Where are you feeling it in your body right now?",
        opts:[{e:"💓",t:"In my chest — heart racing"},{e:"😤",t:"In my head — thoughts spinning"},{e:"🤲",t:"In my hands — tight or shaky"},{e:"🦋",t:"In my tummy — butterflies"}]},
-      {q:"Let's breathe together! Tap the circle and follow Lucky Duck:",
+      {q:"Let's do some breathing — tap the circle and follow along:",
        tool:"breathing"},
-      {q:"Now let's ground you with the 5-4-3-2-1 tool. Tap each one when you find it:",
+      {q:"Now the 5-4-3-2-1 grounding thing — tap each one as you find it:",
        tool:"grounding"}
     ],
     wisdom:[
-      "A still and quiet mind is a precious gift. Even just a few slow, deep breaths can change absolutely everything.",
-      "Taking time to pause and breathe is not weakness — it is one of the wisest things you can do.",
-      "Peace starts on the inside and works its way out. You are creating calm right now, and it is working."
+      "Even a few slow breaths can genuinely shift how you feel. It sounds simple but it actually works.",
+      "Pausing when things feel big isn't weakness — it's probably the smartest thing you can do right now.",
+      "Calm doesn't come from outside, it comes from you. And you're building it right now."
     ],
-    celebrate:{title:"You found your calm! 🌊",msg:"That took real courage and skill. Every time you practise this, it becomes easier and more natural.",wisdom:"The person who can find stillness in a storm is stronger than the one who has never faced wind. That is you — strong and brave."}
+    celebrate:{title:"You found your calm! 🌊",msg:"Genuinely well done — slowing down when everything feels big is a real skill. The more you practise it, the easier it gets.",wisdom:"Learning to be still when things feel loud is one of the most powerful things a person can do. And you just did it."}
   },
   feelings:{
     icon:"💜", title:"Big Feelings", sub:"Understanding your emotions",
     steps:[
-      {q:"Which feeling is the biggest one inside you right now?",
+      {q:"What's the biggest feeling you've got going on right now?",
        opts:[{e:"😡",t:"Angry or frustrated"},{e:"😨",t:"Scared or worried"},{e:"😢",t:"Sad or upset"},{e:"😔",t:"Lonely or left out"}]},
-      {q:"Did something happen today that started this feeling?",
+      {q:"Did something kick this feeling off today?",
        opts:[{e:"👥",t:"Something with friends"},{e:"🏫",t:"Something at school"},{e:"🏠",t:"Something at home"},{e:"🤷",t:"I'm not sure — it just appeared"}]},
-      {q:"Your feelings are ALWAYS okay to have. What might help you feel a little better?",
+      {q:"Your feelings make total sense. What do you think might help a bit right now?",
        opts:[{e:"🎵",t:"Music or something I enjoy"},{e:"🏃",t:"Moving my body"},{e:"🗣️",t:"Talking to someone"},{e:"✏️",t:"Drawing or writing it out"}]}
     ],
     wisdom:[
-      "Every feeling is like a messenger — it is telling you something important. You are not your feelings, but they always matter.",
-      "Being honest about how you feel is the very beginning of healing. You are being so brave right now.",
-      "You are never alone in your feelings. Others have felt exactly this way — and have come through it, just like you will."
+      "Every feeling is trying to tell you something. You don't have to act on it, but it's worth listening to.",
+      "Being honest about how you feel — even just to yourself — is where things start to get better.",
+      "Whatever you're feeling right now, someone else has felt it too and got through it. You will too."
     ],
-    celebrate:{title:"You're so self-aware! 💜",msg:"Understanding your own feelings is one of the most powerful skills a person can ever develop. You should be really proud.",wisdom:"The one who understands their own heart will understand others too. That is a truly beautiful and rare gift — and you have it."}
+    celebrate:{title:"Big self-awareness! 💜",msg:"Seriously, knowing what you're feeling and why is something a lot of adults still struggle with. You should feel good about that.",wisdom:"When you understand yourself, you start to understand others too. That's a gift that keeps giving."}
   },
   social:{
     icon:"👥", title:"Friend Stuff", sub:"Navigating social situations",
     steps:[
-      {q:"What kind of situation is happening with friends right now?",
+      {q:"What's the situation with your friends?",
        opts:[{e:"😠",t:"Someone was unkind or left me out"},{e:"🤔",t:"I don't know how to join in"},{e:"😬",t:"There was an argument or fight"},{e:"🙁",t:"I feel different or misunderstood"}]},
-      {q:"How do you think the other person was feeling?",
+      {q:"How do you reckon the other person was feeling?",
        opts:[{e:"😡",t:"Upset or angry too"},{e:"😕",t:"Confused"},{e:"😐",t:"They didn't seem to notice"},{e:"🤷",t:"I really couldn't tell"}]},
-      {q:"What is one kind thing you could do — even if the other person was in the wrong first?",
+      {q:"What's one thing you could do — even if they were the one who started it?",
        opts:[{e:"🕊️",t:"Choose peace and walk away calmly"},{e:"🗣️",t:"Speak kindly about how I feel"},{e:"👋",t:"Give some space and try again later"},{e:"🤝",t:"Ask a trusted adult to help"}]}
     ],
     wisdom:[
-      "Treat others the way you want to be treated. This is the golden rule — and it really does change everything.",
-      "Being kind even when someone isn't kind back is one of the hardest and most powerful things you can ever do.",
-      "A gentle, calm answer can turn away anger. You have more power to change the temperature in a room than you realise."
+      "Treat people how you want to be treated — sounds simple but it actually changes everything.",
+      "Being kind when someone's not being kind back is genuinely hard. But it's almost always the right call.",
+      "Staying calm when someone else isn't — that's a skill. You've got more influence than you think."
     ],
-    celebrate:{title:"You handled that brilliantly! 👥",msg:"Thinking about both sides of a situation takes real maturity and compassion. That was genuinely impressive.",wisdom:"The one who makes peace between people is doing something truly great. You chose the harder, better path today — and that matters."}
+    celebrate:{title:"Nice work! 👥",msg:"Thinking about how the other person felt too — that's actually a hard thing to do when you're in the middle of it. Really good effort.",wisdom:"Choosing to be kind when you don't have to is the kind of thing that makes a real difference to people around you."}
   },
   reframe:{
     icon:"🔄", title:"Change My Thinking", sub:"Flipping unhelpful thoughts",
     steps:[
-      {q:"Which unhelpful thought sounds most like something in your head right now?",
+      {q:"Which of these sounds most like something going through your head?",
        opts:[{e:"😔",t:"I'm not good enough"},{e:"😟",t:"Nothing ever goes right for me"},{e:"😡",t:"It's not fair — everyone else has it easier"},{e:"😰",t:"I can't do this"}]},
-      {q:"Let's look at that thought together. Is it really 100% true ALL of the time?",
+      {q:"Okay let's look at that thought — is it actually true all the time, though?",
        tool:"reframe"},
-      {q:"What is a kinder, truer thought you could choose right now?",
+      {q:"What's a more honest, fairer thought you could swap it for?",
        opts:[{e:"💪",t:"I am learning and growing every single day"},{e:"🌱",t:"Hard things help me grow stronger"},{e:"🌟",t:"I have got through hard things before"},{e:"🤝",t:"I don't have to face this alone"}]}
     ],
     wisdom:[
-      "The way you think in your heart shapes who you become. Choosing kinder, truer thoughts is one of the greatest skills you can build.",
-      "Nobody is perfect — we all make mistakes and fall short sometimes. What matters most is what you choose to do next.",
-      "You are wonderfully made, exactly as you are. Your different brain is a gift, not a problem. Never let anyone tell you otherwise."
+      "The way you talk to yourself actually shapes who you become. It's worth getting that right.",
+      "Everyone messes up — literally everyone. What matters is what you do after.",
+      "Your brain works differently and that's genuinely a strength, not something to fix. Don't let anyone tell you otherwise."
     ],
-    celebrate:{title:"Brilliant thinking! 🔄",msg:"You just changed your own thoughts on purpose — that is an incredible superpower that will serve you for your whole life!",wisdom:"The one who guards their thoughts well guards their whole life. You are doing exactly that, and it takes real courage."}
+    celebrate:{title:"Mental! 🔄",msg:"You literally just rewired a thought in your head. That's not easy — most people never learn how to do that. You've got a real edge.",wisdom:"What you tell yourself shapes everything. Choosing better thoughts isn't always easy, but it's always worth it."}
   },
   sensory:{
     icon:"🌈", title:"Sensory Check", sub:"Listening to your amazing body",
     steps:[
-      {q:"What is your body telling you right now?",
+      {q:"What's your body saying to you right now?",
        opts:[{e:"🔊",t:"Everything feels too loud or too bright"},{e:"🤗",t:"I need a hug or soft, gentle pressure"},{e:"🏃",t:"I need to move and wiggle and shake"},{e:"🌑",t:"I need somewhere quiet and calm"}]},
-      {q:"How full is your sensory cup right now? Slide to show me:",
+      {q:"How full is your sensory cup right now? Slide to let me know:",
        tool:"meter"},
-      {q:"Which tool do you think would help your body feel more settled?",
+      {q:"What do you think would help your body settle down a bit?",
        opts:[{e:"🎧",t:"Headphones and calming sounds"},{e:"🧸",t:"Something soft to hold or squeeze"},{e:"💧",t:"Cool water on my face or hands"},{e:"🪨",t:"A heavy blanket or deep pressure"}]}
     ],
     wisdom:[
-      "Your body is an amazing, wonderfully made thing. Listening to what it needs is not weakness — it is wisdom.",
-      "There is a right time for everything — a time to be still and a time to move. Your body knows. Let's help it.",
-      "Taking care of yourself is never selfish. When you are well and settled, you are better able to help and love others too."
+      "Your body is always giving you signals. Most people just never stop long enough to notice them.",
+      "Sometimes you need stillness, sometimes you need to move. Your body usually knows which — let's listen to it.",
+      "Looking after yourself isn't selfish. When you feel settled, everything around you works better too."
     ],
-    celebrate:{title:"Great body awareness! 🌈",msg:"You listened to what your body needed and took action — that is a superpower that many grown-ups never even learn!",wisdom:"Your body and mind are deeply connected. Caring for one always helps the other. You are taking care of your whole amazing self today."}
+    celebrate:{title:"Tuned in! 🌈",msg:"Knowing what your body needs and actually doing something about it is a bigger deal than most people realise. Really good work.",wisdom:"Your body is always trying to tell you something. When you start listening, everything starts to work a bit better."}
   }
 };
 
@@ -569,23 +569,26 @@ function duckSay(txtId,typId,msg,delay){
 function speak(text){
   if(!('speechSynthesis' in window))return;
   window.speechSynthesis.cancel();
-  const utt=new SpeechSynthesisUtterance(text);
-  const loadVoice=()=>{
+  // Small delay helps iOS initialise the engine reliably
+  setTimeout(()=>{
+    const utt=new SpeechSynthesisUtterance(text);
     const voices=window.speechSynthesis.getVoices();
-    const v=voices.find(v=>v.name.includes('Google Australian English'))||
-             voices.find(v=>v.name.toLowerCase().includes('australian'))||
-             voices.find(v=>v.name.includes('Lee'))||
-             voices.find(v=>v.name.includes('David')&&v.lang.startsWith('en-AU'))||
+    // Priority: Australian male > any AU > US English > first available
+    const v=voices.find(v=>v.name==='Google Australian English')||
+             voices.find(v=>/australian/i.test(v.name)&&!/female/i.test(v.name))||
+             voices.find(v=>/australian/i.test(v.name))||
              voices.find(v=>v.lang==='en-AU')||
              voices.find(v=>v.name.includes('Google US English'))||
-             voices.find(v=>v.name.includes('Daniel'))||
+             voices.find(v=>v.lang.startsWith('en'))||
              voices[0];
     if(v)utt.voice=v;
-    utt.pitch=1.62; utt.rate=1.08; utt.volume=0.95;
+    // Calm, measured 25-year-old Australian male feel
+    utt.lang   = 'en-AU';
+    utt.pitch  = 1.0;    // neutral male pitch — not high, not deep
+    utt.rate   = 0.88;   // noticeably slower than default, feels relaxed
+    utt.volume = 0.95;
     window.speechSynthesis.speak(utt);
-  };
-  if(window.speechSynthesis.getVoices().length>0)loadVoice();
-  else window.speechSynthesis.onvoiceschanged=loadVoice;
+  },120);
 }
 
 // ═══════════════════════════════════════════
@@ -595,13 +598,13 @@ function setFeeling(btn,emoji,name){
   document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('sel'));
   btn.classList.add('sel');
   const msgs={
-    Happy:"That's so bussin! 😊 A joyful heart is a real treasure — sharing that joy makes it grow even bigger. What do you want to do today?",
-    Frustrated:"Yeah, frustration is genuinely tough. Even the strongest rivers have to find their way around rocks. Want to work through it together?",
-    Worried:"It's okay to feel worried — that just means you care, and that's lowkey really kind. You only need enough strength for right now. Want to try some calm tools?",
-    Angry:"Anger can feel SO big — like a fire inside. But fr, you have real power here. Being slow to anger is true strength. Let's find your calm together.",
-    Meh:"Totally valid. Sometimes just resting is exactly the right move. What would feel good for you today?",
-    Tired:"Being tired is your body asking for some kindness — and honestly? Listen to it. Want to try something gentle, or shall we just chat?",
-    Overwhelmed:"When everything feels like too much, it's giving chaos — but we only need one tiny step together. I'm right here with you. What's going on?"
+    Happy:"That's awesome, love that for you! Good days are worth hanging onto. What do you wanna do with all that good energy?",
+    Frustrated:"Ugh, frustration is the worst hey. That tight, stuck feeling is really rough. Wanna talk through what's going on?",
+    Worried:"Hey, worrying means you care — that's actually a good thing. Let's not get too far ahead though, just focus on right now. Want to try some calm stuff together?",
+    Angry:"Yeah anger hits different — it can feel like everything at once. That's totally valid. Want to work through it and find some breathing room?",
+    Meh:"Yeah sometimes things just feel flat and that's okay. No pressure to be anything other than what you are right now. What sounds good?",
+    Tired:"Being tired is real — your body's telling you something. Let's take it easy. Want something chill, or just wanna have a chat?",
+    Overwhelmed:"When everything piles up it can feel like a lot — like where do you even start, right? Let's just pick one tiny thing. What's going on?"
   };
   const reply=msgs[name]||"Thanks for sharing! How can I help you today?";
   duckSay('home-txt','home-typing',reply,0);
@@ -618,17 +621,17 @@ function sendHome(){
 
 function processHomeInput(text){
   const lower=text.toLowerCase();
-  let reply="Thanks for sharing that — it actually takes guts. Tap one of the tools above or keep chatting and we'll figure it out together!";
+  let reply="Thanks for sharing that, seriously. Pick one of the tools up there or just keep talking — either way we'll figure it out.";
   if(lower.includes('angry')||lower.includes('mad')||lower.includes('furious'))
-    reply="Yeah, anger can feel SO big — but fr, being slow to anger is a real strength. Want to try our calm-down tools together?";
+    reply="Yeah anger can be full-on. Taking a beat before you react is actually a real skill. Want to try some calm-down stuff?";
   else if(lower.includes('worried')||lower.includes('scared')||lower.includes('anxious'))
-    reply="It's okay to feel worried — that's lowkey you caring a lot. You only need enough strength for right now. Want to try breathing together?";
+    reply="Feeling worried is rough. Let's not spiral though — just focus on right now. Want to do some breathing together?";
   else if(lower.includes('sad')||lower.includes('lonely')||lower.includes('upset'))
-    reply="I'm sorry you're feeling that way — that's genuinely hard. But you're not alone at all, I'm right here. Want to talk it through?";
+    reply="That sounds really hard. You don't have to sit with that alone though — I'm right here. Want to talk about it?";
   else if(lower.includes('help'))
-    reply="Of course — asking for help is honestly one of the most W things anyone can do. What do you need today?";
+    reply="Yeah of course! Asking for help is genuinely one of the best things you can do. What do you need?";
   else if(lower.includes('good')||lower.includes('happy')||lower.includes('great')||lower.includes('fine'))
-    reply="That's so good to hear! A joyful heart is a real gift. What do you want to do today?";
+    reply="Love that! Good vibes are worth protecting. What do you want to do today?";
   duckSay('home-txt','home-typing',reply,0);
 }
 
@@ -645,7 +648,7 @@ function startCoach(type){
   buildStepDots();
   document.getElementById('coach-content').innerHTML='';
   setTimeout(()=>{
-    duckSay('coach-txt','coach-typing',"Let's go! Working through this together is such a W move. You've already done the hardest thing just by showing up!",0);
+    duckSay('coach-txt','coach-typing',"Okay let's do this! Honestly just showing up is half the battle. Let's take it one step at a time.",0);
     setTimeout(()=>loadStep(0),1800);
   },200);
   stats.sessions++;
@@ -714,10 +717,10 @@ function selectOpt(btn,stepIdx){
   document.querySelectorAll('.abtn').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
   const responses=[
-    "That's a W answer — keep going, you're doing brilliantly!",
-    "That took real honesty. I'm genuinely proud of you. Let's keep going!",
-    "No cap, you're getting so close to figuring this out!",
-    "That's a really wise choice. On to the next step!"
+    "Yeah good one, keep going!",
+    "That took guts to say — really. Let's keep going.",
+    "You're getting there, one step at a time.",
+    "Good thinking. Next one."
   ];
   duckSay('coach-txt','coach-typing',responses[stepIdx%responses.length],0);
   setTimeout(()=>loadStep(stepIdx+1),800);
@@ -728,7 +731,7 @@ function sendCoach(){
   const val=inp.value.trim();
   if(!val)return;
   inp.value='';
-  duckSay('coach-txt','coach-typing',"Thanks for sharing — that's genuinely brave. Keep going, I'm rooting for you!",0);
+  duckSay('coach-txt','coach-typing',"Thanks for telling me that. Seriously. Keep going — I've got you.",0);
 }
 
 // ═══════════════════════════════════════════
@@ -760,13 +763,13 @@ function doBreath(){
     ring.classList.add('grow');
     lbl.textContent='Breathe IN...';
     cnt.textContent='4 seconds';
-    speak('Breathe in slowly...');
+    speak('Breathe in...');
     breathTimer=setTimeout(()=>{
       breathPhase='hold';
       ring.className='breath-ring';
       lbl.textContent='Hold...';
       cnt.textContent='Hold for 2';
-      speak('Hold...');
+      speak('Hold it...');
       breathTimer=setTimeout(()=>{
         breathPhase='exhale';
         ring.className='breath-ring';
@@ -774,7 +777,7 @@ function doBreath(){
         ring.classList.add('shrink');
         lbl.textContent='Breathe OUT...';
         cnt.textContent='4 seconds';
-        speak('Now breathe out slowly...');
+        speak('And breathe out...');
         breathTimer=setTimeout(()=>{breathPhase='idle';lbl.textContent='Tap again!';cnt.textContent='Well done! 🌟';},4000);
       },2000);
     },4000);
@@ -851,7 +854,7 @@ function celebrate(){
     <div class="ct-wisdom">🌿 ${c.celebrate.wisdom}</div>
   </div>
   <button class="cta-btn" onclick="showScreen('home')">Back to home 🏠</button>`;
-  duckSay('coach-txt','coach-typing',"YOU DID IT! No cap, I am SO proud of you right now! That took real courage — that's an absolute W! 🎉",0);
+  duckSay('coach-txt','coach-typing',"You actually did it! Seriously well done — that wasn't easy and you pushed through. Really proud of you.",0);
   stats.streak++;
   localStorage.setItem('ld_stats',JSON.stringify(stats));
 }
@@ -860,40 +863,90 @@ function celebrate(){
 // MIC / SPEECH RECOGNITION
 // ═══════════════════════════════════════════
 function toggleMic(ctx){
+  // ── iOS Safari requires webkitSpeechRecognition and a direct user gesture ──
   const SRClass=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SRClass){
-    alert("Speech recognition isn't available in this browser. Try Chrome on Android or Safari on iPhone/iPad!");
+    alert("Voice input needs Safari (iPhone/iPad) or Chrome (Android). Please open Lucky Duck in one of those browsers!");
     return;
   }
+
   const btn=document.getElementById(ctx+'-mic');
   const lbl=document.getElementById(ctx+'-mic-lbl');
+  const inp=document.getElementById(ctx==='home'?'home-in':'coach-in');
+
+  // If already listening, stop
   if(listening){
-    window._sr&&window._sr.stop();
-    listening=false;
-    btn.classList.remove('listening');
-    if(lbl)lbl.textContent='Tap to talk';
+    try{window._sr&&window._sr.abort();}catch(e){}
+    stopListening(ctx);
     return;
   }
+
+  // Stop any TTS before listening — iOS can't do both at once
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+
   const sr=new SRClass();
   window._sr=sr;
-  sr.lang='en-AU'; sr.interimResults=false; sr.maxAlternatives=1;
-  sr.onresult=e=>{
-    const txt=e.results[0][0].transcript;
-    if(ctx==='home'){
-      document.getElementById('home-in').value=txt;
-      processHomeInput(txt);
-    } else {
-      document.getElementById('coach-in').value=txt;
-      duckSay('coach-txt','coach-typing',"I heard you — thank you for sharing! You are doing so brilliantly. 🌟",0);
-    }
-    stopListening(ctx);
+
+  // en-AU for Australian English recognition
+  sr.lang           = 'en-AU';
+  sr.interimResults = true;   // show words as they come in
+  sr.maxAlternatives= 1;
+  sr.continuous     = false;  // single utterance — most reliable on iOS
+
+  // ── Show interim results while speaking ──
+  sr.onstart=()=>{
+    listening=true;
+    btn.classList.add('listening');
+    if(lbl)lbl.textContent='Listening...';
+    if(inp)inp.value='';
+    if(inp)inp.placeholder='Hearing you...';
   };
-  sr.onerror=()=>stopListening(ctx);
-  sr.onend=()=>stopListening(ctx);
-  sr.start();
-  listening=true;
-  btn.classList.add('listening');
-  if(lbl)lbl.textContent='Listening...';
+
+  sr.onresult=e=>{
+    let interim='', final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal) final+=e.results[i][0].transcript;
+      else interim+=e.results[i][0].transcript;
+    }
+    // Show what's being heard in the input field in real time
+    if(inp)inp.value=final||interim;
+  };
+
+  sr.onspeechend=()=>{
+    try{sr.stop();}catch(e){}
+  };
+
+  sr.onend=()=>{
+    const transcript=(inp?inp.value:'').trim();
+    stopListening(ctx);
+    if(inp)inp.placeholder=ctx==='home'?'Tell Lucky Duck...':'Tell me more...';
+    if(!transcript)return;
+    // Process the recognised text
+    if(ctx==='home'){
+      processHomeInput(transcript);
+    } else {
+      duckSay('coach-txt','coach-typing',
+        "Got it, thanks for telling me. Keep going.",0);
+    }
+  };
+
+  sr.onerror=e=>{
+    stopListening(ctx);
+    if(inp)inp.placeholder=ctx==='home'?'Tell Lucky Duck...':'Tell me more...';
+    if(e.error==='not-allowed'||e.error==='permission-denied'){
+      alert("Microphone access was blocked. In Safari go to Settings → Safari → Microphone and allow access, then try again.");
+    } else if(e.error==='no-speech'){
+      if(lbl)lbl.textContent='No speech — try again';
+      setTimeout(()=>{if(lbl)lbl.textContent='Tap to talk';},2000);
+    }
+  };
+
+  try{
+    sr.start();
+  } catch(e){
+    stopListening(ctx);
+    alert("Couldn't start the microphone. Make sure you're using Safari on iPhone/iPad or Chrome on Android.");
+  }
 }
 
 function stopListening(ctx){
@@ -928,7 +981,7 @@ function saveJournal(){
   document.getElementById('jtxt').value='';
   jFeel='';
   document.querySelectorAll('.jfpill').forEach(p=>p.classList.remove('sel'));
-  speak("Journal entry saved! That's genuinely brave — taking time to understand how you feel is a total W move.");
+  speak("Saved! Seriously, taking time to check in with how you feel is a big deal. Good on you.");
 }
 
 // ═══════════════════════════════════════════
@@ -943,15 +996,23 @@ window.addEventListener('load',()=>{
     document.getElementById('stat-streak').textContent=s.streak;
     document.getElementById('stat-tools').textContent=s.tools;
   }
-  // Preload voices
+  // Preload voices — iOS needs a user gesture then a short delay
   if('speechSynthesis' in window){
-    window.speechSynthesis.getVoices();
-    window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+    const prime=()=>{
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+    };
+    prime();
+    // iOS sometimes needs the page to be touched first before TTS works
+    document.addEventListener('touchstart',()=>{
+      window.speechSynthesis.cancel();
+      prime();
+    },{once:true,passive:true});
   }
-  // Welcome
+  // Welcome — delayed enough for voices to load
   setTimeout(()=>{
-    speak("Hey! I'm Lucky Duck — your problem-solving pal. No cap, I'm totally here for you. How are you feeling today?");
-  },800);
+    speak("Hey! I'm Lucky Duck. Whatever's going on today, we'll work through it together. How are you feeling?");
+  },1200);
 });
 </script>
 </body>
