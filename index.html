@@ -964,6 +964,35 @@ function _startListening(SRClass) {
   var btn     = document.getElementById((_micCtx || "home") + "-mic");
   var lbl     = document.getElementById((_micCtx || "home") + "-mic-lbl");
   if (window._sr) { try { window._sr.abort(); } catch(e) {} window._sr = null; }
+
+  // iOS Safari REQUIRES getUserMedia permission to be granted before
+  // webkitSpeechRecognition will fire any events. Without this step,
+  // onstart fires but onresult never does.
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    icon.textContent   = "🎙️";
+    title.textContent  = "Checking mic...";
+    status.textContent = "Allow microphone access if asked";
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(function(stream) {
+        // Permission granted - stop stream tracks (SR handles its own stream)
+        stream.getTracks().forEach(function(t) { t.stop(); });
+        // Small pause then start SR
+        setTimeout(function() { _doStartSR(SRClass, icon, title, status, wave, tbox, sendBtn, btn, lbl); }, 300);
+      })
+      .catch(function(err) {
+        icon.textContent    = "🔒";
+        title.textContent   = "Mic blocked";
+        status.textContent  = "On iPad: Settings > Safari > Microphone > Allow";
+        tbox.textContent    = "After allowing access, tap Cancel and try again.";
+        tbox.classList.add("has-text");
+      });
+    return;
+  }
+  // Fallback: no getUserMedia, try SR directly
+  _doStartSR(SRClass, icon, title, status, wave, tbox, sendBtn, btn, lbl);
+}
+
+function _doStartSR(SRClass, icon, title, status, wave, tbox, sendBtn, btn, lbl) {
   var sr = new SRClass();
   window._sr = sr;
   sr.lang            = "en-AU";
