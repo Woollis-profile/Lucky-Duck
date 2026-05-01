@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mic Diagnostic</title>
+<style>
+  body{font-family:sans-serif;padding:20px;background:#fff;max-width:400px;margin:0 auto}
+  button{width:100%;padding:16px;font-size:18px;font-weight:bold;border:none;border-radius:12px;margin:8px 0;cursor:pointer}
+  .go{background:#FF6B35;color:white}
+  .stop{background:#e74c3c;color:white;display:none}
+  #log{background:#f5f5f5;border-radius:12px;padding:16px;margin-top:16px;min-height:120px;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+  .ok{color:#27ae60}.err{color:#e74c3c}.info{color:#2980b9}
+</style>
+</head>
+<body>
+<h2>🎙️ Mic Diagnostic</h2>
+<p>This page tests exactly what your browser supports.</p>
+<button class="go" id="startBtn" onclick="startTest()">Tap to Test Microphone</button>
+<button class="stop" id="stopBtn" onclick="stopTest()">Stop</button>
+<div id="log">Tap the button above to begin...\n</div>
+
+<script>
+var sr = null;
+var log = document.getElementById('log');
+
+function addLog(msg, cls) {
+  var line = document.createElement('div');
+  line.textContent = msg;
+  if (cls) line.className = cls;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+function startTest() {
+  log.innerHTML = '';
+  addLog('--- DIAGNOSTIC START ---', 'info');
+
+  // 1. Check API
+  addLog('webkitSpeechRecognition: ' + ('webkitSpeechRecognition' in window), 'webkitSpeechRecognition' in window ? 'ok' : 'err');
+  addLog('SpeechRecognition: ' + ('SpeechRecognition' in window), 'SpeechRecognition' in window ? 'ok' : 'err');
+
+  var SRClass = window.webkitSpeechRecognition || window.SpeechRecognition;
+  if (!SRClass) {
+    addLog('ERROR: No speech API found!', 'err');
+    return;
+  }
+  addLog('Using: ' + (window.webkitSpeechRecognition ? 'webkitSpeechRecognition' : 'SpeechRecognition'), 'info');
+
+  // 2. Check getUserMedia
+  addLog('getUserMedia: ' + !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia), !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ? 'ok' : 'err');
+
+  // 3. Request mic permission explicitly first via getUserMedia
+  // This is the KEY step iOS Safari needs before SpeechRecognition works
+  addLog('Requesting mic permission via getUserMedia...', 'info');
+
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({audio: true})
+      .then(function(stream) {
+        addLog('getUserMedia: GRANTED ✓', 'ok');
+        // Stop the stream tracks immediately - we just needed permission
+        stream.getTracks().forEach(function(t) { t.stop(); });
+        // NOW start speech recognition
+        setTimeout(function() { doSpeechRecognition(SRClass); }, 300);
+      })
+      .catch(function(err) {
+        addLog('getUserMedia DENIED: ' + err.name + ' - ' + err.message, 'err');
+        addLog('Try: Settings > Safari > Microphone > Allow', 'info');
+      });
+  } else {
+    addLog('getUserMedia not available - trying SR directly', 'info');
+    doSpeechRecognition(SRClass);
+  }
+}
+
+function doSpeechRecognition(SRClass) {
+  addLog('Creating SpeechRecognition...', 'info');
+  document.getElementById('startBtn').style.display = 'none';
+  document.getElementById('stopBtn').style.display = 'block';
+
+  sr = new SRClass();
+  sr.lang = 'en-AU';
+  sr.continuous = false;
+  sr.interimResults = true;
+  sr.maxAlternatives = 1;
+
+  sr.onstart      = function() { addLog('EVENT: onstart ✓', 'ok'); };
+  sr.onaudiostart = function() { addLog('EVENT: onaudiostart ✓', 'ok'); };
+  sr.onsoundstart = function() { addLog('EVENT: onsoundstart ✓', 'ok'); };
+  sr.onspeechstart= function() { addLog('EVENT: onspeechstart ✓', 'ok'); };
+  sr.onspeechend  = function() { addLog('EVENT: onspeechend', 'info'); };
+  sr.onsoundend   = function() { addLog('EVENT: onsoundend', 'info'); };
+  sr.onaudioend   = function() { addLog('EVENT: onaudioend', 'info'); };
+  sr.onnomatch    = function() { addLog('EVENT: onnomatch', 'err'); };
+
+  sr.onresult = function(e) {
+    addLog('EVENT: onresult ✓', 'ok');
+    for (var i = e.resultIndex; i < e.results.length; i++) {
+      var t = e.results[i][0].transcript;
+      var f = e.results[i].isFinal;
+      addLog((f ? 'FINAL: ' : 'interim: ') + t, f ? 'ok' : 'info');
+    }
+  };
+
+  sr.onerror = function(e) {
+    addLog('EVENT: onerror - ' + e.error, 'err');
+    document.getElementById('startBtn').style.display = 'block';
+    document.getElementById('stopBtn').style.display = 'none';
+  };
+
+  sr.onend = function() {
+    addLog('EVENT: onend', 'info');
+    addLog('--- DONE ---', 'info');
+    document.getElementById('startBtn').style.display = 'block';
+    document.getElementById('stopBtn').style.display = 'none';
+  };
+
+  try {
+    sr.start();
+    addLog('sr.start() called - speak now!', 'ok');
+  } catch(e) {
+    addLog('sr.start() ERROR: ' + e.message, 'err');
+  }
+}
+
+function stopTest() {
+  if (sr) { try { sr.stop(); } catch(e) {} }
+  document.getElementById('startBtn').style.display = 'block';
+  document.getElementById('stopBtn').style.display = 'none';
+}
+</script>
+</body>
+</html>
