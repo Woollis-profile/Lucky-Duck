@@ -85,6 +85,7 @@ html,body{height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background
 .mic-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px}
 .mic-btn{width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF9F1C);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(255,107,53,.4);transition:all .2s;font-size:25px}
 .mic-btn.listening{animation:micpulse .8s ease-in-out infinite}
+.mic-btn.mic-error{background:linear-gradient(135deg,#e74c3c,#c0392b);animation:none}
 @keyframes micpulse{0%,100%{box-shadow:0 4px 18px rgba(255,107,53,.5)}50%{box-shadow:0 4px 36px rgba(255,107,53,.9),0 0 0 14px rgba(255,107,53,.15)}}
 .mic-lbl{font-size:10px;font-weight:700;color:var(--lt)}
 
@@ -862,99 +863,219 @@ function celebrate(){
 // ═══════════════════════════════════════════
 // MIC / SPEECH RECOGNITION
 // ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+// MIC SYSTEM — rebuilt for iOS Safari reliability
+// Key iOS constraints:
+//  1. webkitSpeechRecognition only (no standard API)
+//  2. Must be called synchronously inside a user gesture (touchend/click)
+//  3. Cannot overlap with speechSynthesis — must fully cancel TTS first
+//  4. continuous=false is most stable; each tap = one fresh session
+//  5. A cooldown prevents double-fire from tap events
+//  6. Recognition object must be recreated each session (reuse causes errors)
+//  7. Embedded iframes (e.g. Notion) block mic — guide user to open directly
+// ═══════════════════════════════════════════
+let _micCtx=null, _micCooldown=false, _finalTranscript='';
+
 function toggleMic(ctx){
-  // ── iOS Safari requires webkitSpeechRecognition and a direct user gesture ──
-  const SRClass=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SRClass){
-    alert("Voice input needs Safari (iPhone/iPad) or Chrome (Android). Please open Lucky Duck in one of those browsers!");
-    return;
-  }
+  // Cooldown guard — prevents double-tap ghost fires on iOS
+  if(_micCooldown) return;
+  _micCooldown=true;
+  setTimeout(()=>{ _micCooldown=false; }, 600);
 
   const btn=document.getElementById(ctx+'-mic');
   const lbl=document.getElementById(ctx+'-mic-lbl');
   const inp=document.getElementById(ctx==='home'?'home-in':'coach-in');
 
-  // If already listening, stop
+  // ── If already listening, stop this session cleanly ──
   if(listening){
-    try{window._sr&&window._sr.abort();}catch(e){}
-    stopListening(ctx);
+    _stopMic();
+    _setMicUI(ctx,'idle');
     return;
   }
 
-  // Stop any TTS before listening — iOS can't do both at once
-  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  // ── Check API availability ──
+  const SRClass=window.webkitSpeechRecognition||window.SpeechRecognition;
+  if(!SRClass){
+    _showMicHelp(ctx);
+    return;
+  }
 
-  const sr=new SRClass();
-  window._sr=sr;
+  // ── Hard-stop TTS — iOS blocks mic while audio engine is active ──
+  try{
+    window.speechSynthesis.cancel();
+    // Extra flush needed on some iOS versions
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+    window.speechSynthesis.cancel();
+  }catch(e){}
 
-  // en-AU for Australian English recognition
+  // ── Short pause lets iOS audio engine fully release before mic opens ──
+  setTimeout(()=>{ _startMic(ctx, SRClass, btn, lbl, inp); }, 250);
+}
+
+function _startMic(ctx, SRClass, btn, lbl, inp){
+  // Always create a fresh instance — reusing causes InvalidStateError on iOS
+  if(window._sr){ try{window._sr.abort();}catch(e){} window._sr=null; }
+
+  const sr = new SRClass();
+  window._sr  = sr;
+  _micCtx     = ctx;
+  _finalTranscript = '';
+
   sr.lang           = 'en-AU';
-  sr.interimResults = true;   // show words as they come in
+  sr.continuous     = false;   // single-shot is most reliable on iOS
+  sr.interimResults = true;    // show live words in the input box
   sr.maxAlternatives= 1;
-  sr.continuous     = false;  // single utterance — most reliable on iOS
 
-  // ── Show interim results while speaking ──
-  sr.onstart=()=>{
-    listening=true;
+  sr.onstart = ()=>{
+    listening = true;
+    _micCtx   = ctx;
     btn.classList.add('listening');
-    if(lbl)lbl.textContent='Listening...';
-    if(inp)inp.value='';
-    if(inp)inp.placeholder='Hearing you...';
+    if(lbl) lbl.textContent = '🔴 Listening...';
+    if(inp){ inp.value=''; inp.placeholder='Go ahead, I'm listening...'; }
   };
 
-  sr.onresult=e=>{
-    let interim='', final='';
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal) final+=e.results[i][0].transcript;
-      else interim+=e.results[i][0].transcript;
+  sr.onresult = e=>{
+    let interim='';
+    for(let i=e.resultIndex; i<e.results.length; i++){
+      if(e.results[i].isFinal){
+        _finalTranscript += e.results[i][0].transcript + ' ';
+      } else {
+        interim += e.results[i][0].transcript;
+      }
     }
-    // Show what's being heard in the input field in real time
-    if(inp)inp.value=final||interim;
+    // Show live feedback in the input field
+    if(inp) inp.value = (_finalTranscript + interim).trim();
   };
 
-  sr.onspeechend=()=>{
-    try{sr.stop();}catch(e){}
+  // onspeechend fires when the user stops talking — tell iOS we're done
+  sr.onspeechend = ()=>{
+    try{ sr.stop(); }catch(e){}
   };
 
-  sr.onend=()=>{
-    const transcript=(inp?inp.value:'').trim();
-    stopListening(ctx);
-    if(inp)inp.placeholder=ctx==='home'?'Tell Lucky Duck...':'Tell me more...';
-    if(!transcript)return;
-    // Process the recognised text
+  sr.onend = ()=>{
+    const transcript = _finalTranscript.trim() ||
+                       (inp ? inp.value.trim() : '');
+    _stopMic();
+    _setMicUI(ctx,'idle');
+    if(inp) inp.placeholder = ctx==='home'?'Tell Lucky Duck...':'Tell me more...';
+
+    if(!transcript) return;
+
+    // Show final clean transcript in the box
+    if(inp) inp.value = transcript;
+
+    // Feed into Lucky Duck
     if(ctx==='home'){
       processHomeInput(transcript);
     } else {
       duckSay('coach-txt','coach-typing',
-        "Got it, thanks for telling me. Keep going.",0);
+        "Got it, thanks for sharing. Keep going.", 0);
     }
   };
 
-  sr.onerror=e=>{
-    stopListening(ctx);
-    if(inp)inp.placeholder=ctx==='home'?'Tell Lucky Duck...':'Tell me more...';
-    if(e.error==='not-allowed'||e.error==='permission-denied'){
-      alert("Microphone access was blocked. In Safari go to Settings → Safari → Microphone and allow access, then try again.");
-    } else if(e.error==='no-speech'){
-      if(lbl)lbl.textContent='No speech — try again';
-      setTimeout(()=>{if(lbl)lbl.textContent='Tap to talk';},2000);
+  sr.onerror = e=>{
+    _stopMic();
+    _setMicUI(ctx,'idle');
+    if(inp) inp.placeholder = ctx==='home'?'Tell Lucky Duck...':'Tell me more...';
+
+    const err = e.error||'';
+    if(err==='not-allowed' || err==='permission-denied'){
+      // Notion iframe blocks mic permissions — detect and advise
+      const inIframe = window.self !== window.top;
+      if(inIframe){
+        _setMicUI(ctx,'error','Open app directly');
+        setTimeout(()=>_setMicUI(ctx,'idle'),3500);
+        alert(
+          "The microphone can't be used inside Notion.
+
+" +
+          "Open Lucky Duck directly in Safari instead:
+" +
+          (window.location.href||'your GitHub Pages link')
+        );
+      } else {
+        _setMicUI(ctx,'error','Mic blocked');
+        setTimeout(()=>_setMicUI(ctx,'idle'),3000);
+        alert(
+          "Microphone blocked.
+
+" +
+          "On iPhone/iPad:
+" +
+          "Settings → Safari → Microphone → Allow
+
+" +
+          "Then come back and try again."
+        );
+      }
+    } else if(err==='no-speech'){
+      _setMicUI(ctx,'error','Nothing heard');
+      setTimeout(()=>_setMicUI(ctx,'idle'),2500);
+    } else if(err==='audio-capture'){
+      _setMicUI(ctx,'error','Mic not found');
+      setTimeout(()=>_setMicUI(ctx,'idle'),2500);
+    } else if(err==='network'){
+      _setMicUI(ctx,'error','No connection');
+      setTimeout(()=>_setMicUI(ctx,'idle'),2500);
+    } else if(err==='aborted'){
+      // Normal — user tapped stop
     }
   };
 
   try{
     sr.start();
-  } catch(e){
-    stopListening(ctx);
-    alert("Couldn't start the microphone. Make sure you're using Safari on iPhone/iPad or Chrome on Android.");
+  }catch(e){
+    _stopMic();
+    _setMicUI(ctx,'idle');
+    alert(
+      "Couldn't open the microphone.
+" +
+      "Make sure you're using Safari on iPhone/iPad
+" +
+      "and that mic permission is allowed in Settings."
+    );
   }
 }
 
-function stopListening(ctx){
-  listening=false;
+function _stopMic(){
+  listening = false;
+  _finalTranscript = '';
+  if(window._sr){
+    try{ window._sr.abort(); }catch(e){}
+    window._sr = null;
+  }
+}
+
+function _setMicUI(ctx, state, msg){
   const btn=document.getElementById(ctx+'-mic');
   const lbl=document.getElementById(ctx+'-mic-lbl');
-  if(btn)btn.classList.remove('listening');
-  if(lbl)lbl.textContent='Tap to talk';
+  if(!btn) return;
+  btn.classList.remove('listening','mic-error');
+  if(state==='listening'){
+    btn.classList.add('listening');
+    if(lbl) lbl.textContent='🔴 Listening...';
+  } else if(state==='error'){
+    btn.classList.add('mic-error');
+    if(lbl) lbl.textContent = msg||'Try again';
+  } else {
+    if(lbl) lbl.textContent='Tap to talk';
+  }
+}
+
+function _showMicHelp(ctx){
+  const inIframe = window.self !== window.top;
+  if(inIframe){
+    alert(
+      "Voice input doesn't work inside Notion.
+
+" +
+      "Open Lucky Duck directly in Safari to use the microphone:
+" +
+      (window.location.href||'your GitHub Pages link')
+    );
+  } else {
+    alert("Voice input needs Safari on iPhone/iPad, or Chrome on Android.");
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -996,23 +1117,29 @@ window.addEventListener('load',()=>{
     document.getElementById('stat-streak').textContent=s.streak;
     document.getElementById('stat-tools').textContent=s.tools;
   }
-  // Preload voices — iOS needs a user gesture then a short delay
+  // ── Voice preload ──
+  // iOS requires getVoices() to be called, and won't load them until
+  // after a user gesture. We prime on load, then again on first touch.
   if('speechSynthesis' in window){
-    const prime=()=>{
+    const primeVoices=()=>{
       window.speechSynthesis.getVoices();
       window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
     };
-    prime();
-    // iOS sometimes needs the page to be touched first before TTS works
-    document.addEventListener('touchstart',()=>{
+    primeVoices();
+    // On first touch: re-prime voices AND fire a silent utterance to
+    // unlock the iOS audio session (required before real TTS or mic works)
+    document.addEventListener('touchend',()=>{
+      primeVoices();
+      const silent=new SpeechSynthesisUtterance('');
+      silent.volume=0;
+      window.speechSynthesis.speak(silent);
       window.speechSynthesis.cancel();
-      prime();
     },{once:true,passive:true});
   }
-  // Welcome — delayed enough for voices to load
+  // Welcome — 1.4s gives voices time to load on iOS
   setTimeout(()=>{
     speak("Hey! I'm Lucky Duck. Whatever's going on today, we'll work through it together. How are you feeling?");
-  },1200);
+  },1400);
 });
 </script>
 </body>
